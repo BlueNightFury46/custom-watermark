@@ -63,7 +63,7 @@ public class PumpkinClient implements ClientModInitializer {
         ColourMapInit();
 
 
-        bind = KeyBindingHelper.registerKeyBinding(new KeyBinding("watermark.gui", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_H, "watermark.keys"));
+        bind = KeyBindingHelper.registerKeyBinding(new KeyBinding("watermark.gui", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_V, "watermark.keys"));
 
         ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
             if(bind.isPressed()){
