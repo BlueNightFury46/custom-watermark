@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "pumpkin",
+  "version": "${version}",
+  "name": "custom-watermark",
+  "description": "TBD",
+  "authors": [],
+  "contact": {},
+  "license": "ISC",
+  "icon": "assets/pumpkin/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "dev.bluenightfury46.pumpkin.client.PumpkinClient"
+    ],
+    "main": [
+      "dev.bluenightfury46.pumpkin.Pumpkin"
+    ]
+  },
+  "mixins": [
+    "pumpkin.mixins.json",
+    {
+      "config": "pumpkin.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
