@@ -3,10 +3,10 @@
   "id": "pumpkin",
   "version": "${version}",
   "name": "custom-watermark",
-  "description": "TBD",
+  "description": "Adds a customisable text watermark to the game that you can edit using the built-in GUI",
   "authors": [],
   "contact": {},
-  "license": "ISC",
+  "license": "GNU GPL V3",
   "icon": "assets/pumpkin/icon.png",
   "environment": "*",
   "entrypoints": {
