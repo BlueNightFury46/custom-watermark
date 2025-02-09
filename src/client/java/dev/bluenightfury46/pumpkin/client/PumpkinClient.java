@@ -15,9 +15,11 @@ import net.minecraft.client.gui.hud.ClientBossBar;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.datafixer.fix.OptionsKeyLwjgl3Fix;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.LoggerFactory;
 
@@ -46,11 +48,22 @@ public class PumpkinClient implements ClientModInitializer {
 
     public static HashMap<String, Color> colourMap = new HashMap<>();
     public static HashMap<String, Integer> colourMapIndex = new HashMap<>();
+    public static HashMap<Integer, String> invMapIndex = new HashMap<>();
     public static String priorColourString = "literal{white}";
 
 
     public static Screen screen = new Menu(Text.of("Title"));
     public static KeyBinding bind;
+
+    public static int count;
+    public static  boolean counting = false;
+    public static boolean running = true;
+
+    public static boolean devmode = true;
+
+    final int index_max = 9;
+
+    public static final String MOD_ID = "customwatermark";
 
 
     @Override
@@ -72,6 +85,61 @@ public class PumpkinClient implements ClientModInitializer {
         });
 
 
+
+            KeyBinding cycle_colour = KeyBindingHelper.registerKeyBinding(new KeyBinding("watermark.cycle", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_SLASH, "watermark.keys"));
+
+
+            ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
+
+                if(count > 5 && counting) {
+                    running = true;
+                    counting = false;
+
+                    count = 0;
+
+                }
+
+              if(running){
+                   if (cycle_colour.isPressed()) {
+
+                       int n = colourMapIndex.get(priorColourString);
+                       if (n + 1 > index_max) {
+                           n = 0;
+                       } else {
+                           n++;
+                       }
+
+                       String newStr = invMapIndex.get(n);
+
+
+
+                       priorColourString = newStr;
+                       colour = colourMap.get(newStr);
+
+                       running = false;
+                       counting = true;
+
+
+                   //    ApplyChanges();
+                       SaveChanges();
+
+
+
+
+                   }
+               }
+                if(counting){
+                    count++;
+
+                }
+
+
+            });
+
+
+
+
+
         HudRenderCallback.EVENT.register((drawContext, counter)->{
 
             String value = txt;
@@ -86,7 +154,11 @@ public class PumpkinClient implements ClientModInitializer {
                     if(value.contains("{date}") || value.contains("{time}")) {
                         LocalDateTime t = LocalDateTime.now();
                         value = value.replace("{date}", (t.getDayOfMonth() + "/" + t.getMonthValue() + "/" + t.getYear()));
-                        value = value.replace("{time}", (t.getHour() + ":" + t.getMinute()));
+                        int time = t.getMinute(); if(time < 10) {
+                            value = value.replace("{time}", (t.getHour() + ":" + "0" + time));
+                        } else {
+                            value = value.replace("{time}", (t.getHour() + ":" + time));
+                        }
                     }
                     if(value.contains("{username}")) {
                         value = value.replace("{username}", ("" + client.player.getName().getString()));
@@ -112,17 +184,43 @@ public class PumpkinClient implements ClientModInitializer {
     }
 
     public void ColourMapInit(){
+        PumpkinClient.colourMap.put("literal{white}", Color.WHITE);
         PumpkinClient.colourMap.put("literal{blue}", Color.BLUE);
         PumpkinClient.colourMap.put("literal{red}", Color.RED);
         PumpkinClient.colourMap.put("literal{green}", Color.GREEN);
         PumpkinClient.colourMap.put("literal{yellow}", Color.YELLOW);
-        PumpkinClient.colourMap.put("literal{white}", Color.WHITE);
+        PumpkinClient.colourMap.put("literal{orange}", new Color(249, 117, 38));
+        PumpkinClient.colourMap.put("literal{pink}", new Color(240, 114, 208));
+        PumpkinClient.colourMap.put("literal{pastel blue}", new Color(170,185,253));
+        PumpkinClient.colourMap.put("literal{pastel red}", new Color(	249, 187, 187));
+        PumpkinClient.colourMap.put("literal{pastel yellow}", new Color(240, 238, 174));
+        PumpkinClient.colourMap.put("literal{pastel green}", new Color(187, 249, 198));
 
         colourMapIndex.put("literal{white}", 0);
         colourMapIndex.put("literal{blue}", 1);
         colourMapIndex.put("literal{red}", 2);
         colourMapIndex.put("literal{green}", 3);
         colourMapIndex.put("literal{yellow}", 4);
+        colourMapIndex.put("literal{orange}", 5);
+        colourMapIndex.put("literal{pink}", 6);
+        colourMapIndex.put("literal{pastel blue}", 7);
+        colourMapIndex.put("literal{pastel red}", 8);
+        colourMapIndex.put("literal{pastel yellow}", 9);
+        colourMapIndex.put("literal{pastel green}", 10);
+
+
+        //INVERSE REGISTER
+        invMapIndex.put(0, "literal{white}");
+        invMapIndex.put(1, "literal{blue}");
+        invMapIndex.put(2, "literal{red}");
+        invMapIndex.put(3, "literal{green}");
+        invMapIndex.put(4, "literal{yellow}");
+        invMapIndex.put(5, "literal{orange}");
+        invMapIndex.put(6, "literal{pink}");
+        invMapIndex.put(7, "literal{pastel blue}");
+        invMapIndex.put(8, "literal{pastel red}");
+        invMapIndex.put(9, "literal{pastel yellow}");
+        invMapIndex.put(10, "literal{pastel green}");
     }
 
    public static void LoadConfig(){
@@ -170,9 +268,9 @@ public class PumpkinClient implements ClientModInitializer {
 
 
         } catch(JsonParseException e){
-            LoggerFactory.getLogger("pumpkin").error("Failed to parse JSON data from config file: " + e);
+            LoggerFactory.getLogger(MOD_ID).error("Failed to parse JSON data from config file: " + e);
         }  catch (IOException e) {
-            LoggerFactory.getLogger("pumpkin").error("Failed to find JSON file " + e);
+            LoggerFactory.getLogger(MOD_ID).error("Failed to find JSON file " + e);
         } catch(NullPointerException e){
              colour = Color.WHITE;
         }
@@ -192,6 +290,7 @@ public class PumpkinClient implements ClientModInitializer {
      //  try{ height = Integer.parseInt(Menu.height.getText()); }catch(NullPointerException e){height = 10;}catch(NumberFormatException e){height = 10;}
 
        try{ txt = Menu.text.getText();}catch (NullPointerException e){txt = "FPS: {fps}";}
+
 
        client.setScreen(null);
 
@@ -217,13 +316,61 @@ public class PumpkinClient implements ClientModInitializer {
            json_config_file.close();
 
        } catch(JsonParseException e){
-           LoggerFactory.getLogger("pumpkin").error("Failed to parse JSON data from config file: " + e);
+           LoggerFactory.getLogger(MOD_ID).error("Failed to parse JSON data from config file: " + e);
        } catch(FileNotFoundException e){
-           LoggerFactory.getLogger("pumpkin").error("Failed to find JSON file " + e);
+           LoggerFactory.getLogger(MOD_ID).error("Failed to find JSON file " + e);
        } catch (IOException e) {
-           LoggerFactory.getLogger("pumpkin").error("Failed to find JSON file " + e);
+           LoggerFactory.getLogger(MOD_ID).error("Failed to find JSON file " + e);
        }
 
    }
+
+
+    public static void SaveChanges(){
+
+        try{if(colour==null){colour = Color.WHITE;}}catch(NullPointerException e){}
+        try{if(priorColourString==null){priorColourString = "literal{white}";}}catch (NullPointerException e){priorColourString = "literal{white}";}
+
+        try{int n = x;}catch(NullPointerException e){x = 10;}catch(NumberFormatException e){x = 10;}
+        try{int val = y;}catch(NumberFormatException e){y = 10;}
+        //  try{ width = Integer.parseInt(Menu.width.getText()); }catch(NullPointerException e){width = 30;}catch(NumberFormatException e){width = 30;}
+        //  try{ height = Integer.parseInt(Menu.height.getText()); }catch(NullPointerException e){height = 10;}catch(NumberFormatException e){height = 10;}
+
+        try{if(txt==null){txt = "FPS: {fps}";}}catch (NullPointerException e){txt = "FPS: {fps}";}
+
+
+
+        try {
+
+            config conf = new config(x, y, txt, priorColourString);
+
+            Gson gson = new GsonBuilder().registerTypeAdapter(config.class, new json()).create();
+
+            String json_string = gson.toJson(conf, config.class);
+
+            File file = new File("config/custom-watermark.json");
+
+
+
+
+            if(!file.exists()){
+                file.createNewFile();
+            }
+
+            FileWriter json_config_file = new FileWriter(file);
+            json_config_file.write(json_string);
+            json_config_file.close();
+
+        } catch(JsonParseException e){
+            LoggerFactory.getLogger(MOD_ID).error("Failed to parse JSON data from config file: " + e);
+        } catch(FileNotFoundException e){
+            LoggerFactory.getLogger(MOD_ID).error("Failed to find JSON file " + e);
+        } catch (IOException e) {
+            LoggerFactory.getLogger(MOD_ID).error("Failed to find JSON file " + e);
+        }
+
+    }
+
+
 
 }

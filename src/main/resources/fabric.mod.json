@@ -1,13 +1,16 @@
 {
   "schemaVersion": 1,
-  "id": "pumpkin",
+  "id": "customwatermark",
   "version": "${version}",
-  "name": "custom-watermark",
+  "name": "Custom-Watermark",
+  "environment": "client",
   "description": "Adds a customisable text watermark to the game that you can edit using the built-in GUI",
-  "authors": [],
-  "contact": {},
+  "authors": ["BlueNightFury46"],
+  "contact": {
+    "website": "https://bluenightfury46.dev/socials.html"
+  },
   "license": "GNU GPL V3",
-  "icon": "assets/pumpkin/icon.png",
+  "icon": "assets/customwatermark/icon.png",
   "environment": "*",
   "entrypoints": {
     "client": [
@@ -18,9 +21,9 @@
     ]
   },
   "mixins": [
-    "pumpkin.mixins.json",
+    "customwatermark.mixins.json",
     {
-      "config": "pumpkin.client.mixins.json",
+      "config": "customwatermark.client.mixins.json",
       "environment": "client"
     }
   ],
@@ -28,5 +31,14 @@
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
     "minecraft": "${minecraft_version}"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "watermark.modmenu.mywebsite": "https://bluenightfury46.dev"
+      },
+      "website": "https://bluenightfury46.dev",
+      "update-checker": true
+    }
   }
 }

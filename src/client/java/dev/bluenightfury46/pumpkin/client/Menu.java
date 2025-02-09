@@ -49,22 +49,32 @@ public class Menu extends Screen {
         cycle_v.add(Text.of("red"));
         cycle_v.add(Text.of("green"));
         cycle_v.add(Text.of("yellow"));
+        cycle_v.add(Text.of("orange"));
+        cycle_v.add(Text.of("pink"));
+        cycle_v.add(Text.of("pastel blue"));
+        cycle_v.add(Text.of("pastel red"));
+        cycle_v.add(Text.of("pastel green"));
+        cycle_v.add(Text.of("pastel yellow"));
 
         Function<Text, Text> func = val -> val;
-
-        colour = new CyclingButtonWidget.Builder<Text>(func).values(cycle_v).initially(cycle_v.get(PumpkinClient.colourMapIndex.get(PumpkinClient.priorColourString))).build(175, 90-25+15, 120, 20, Text.of("colour"));
-
+try {
+    colour = new CyclingButtonWidget.Builder<Text>(func).values(cycle_v).initially(cycle_v.get(PumpkinClient.colourMapIndex.get(PumpkinClient.priorColourString))).build(175, 90 - 25 + 15, 120, 20, Text.of("colour"));
+} catch(NullPointerException e){
+    colour = new CyclingButtonWidget.Builder<Text>(func).values(cycle_v).build(175, 90 - 25 + 15, 120, 20, Text.of("colour"));
+}
 
 
         apply = ButtonWidget.builder(Text.of("apply changes"), button -> {PumpkinClient.ApplyChanges();}).dimensions(185, 140-10+15, 100, 20).build();
 
         x_pos = new TextFieldWidget(textRenderer, 130, 110-10+15, 40, 20, Text.of(""));
         x_pos.setText(String.valueOf(PumpkinClient.x));
+        x_pos.setMaxLength(10);
         x_txt = new TextWidget(x_pos.getX(), x_pos.getY()-15, x_pos.getWidth(), x_pos.getHeight(), Text.of("x value"), textRenderer);
 
 
         y_pos = new TextFieldWidget(textRenderer, 175, 110-10+15, 40, 20, Text.of(""));
         y_pos.setText(String.valueOf(PumpkinClient.y));
+        y_pos.setMaxLength(10);
         y_txt = new TextWidget(y_pos.getX(), y_pos.getY()-15, y_pos.getWidth(), y_pos.getHeight(), Text.of("y value"), textRenderer);
 
 
@@ -78,8 +88,8 @@ public class Menu extends Screen {
 
 
         text = new TextFieldWidget(textRenderer, 220, 110-10+15, 120, 20, Text.of(""));
-        text.setText(PumpkinClient.txt);
         text.setMaxLength(500);
+        text.setText(PumpkinClient.txt.toString());
         txt_txt = new TextWidget(text.getX()-10, text.getY()-15, 100, 20, Text.of("watermark-text"),  textRenderer);
 
 
