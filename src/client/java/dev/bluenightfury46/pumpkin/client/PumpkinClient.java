@@ -26,10 +26,8 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.io.*;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.UUID;
+import java.util.*;
+
 @Environment(EnvType.CLIENT)
 
 //This class is called pumpkin, because I originally wanted to make a halloween mod, but changed my mind...
@@ -148,8 +146,12 @@ public class PumpkinClient implements ClientModInitializer {
                 if(txt.contains("{")&&txt.contains("}")) {
 
                     value = txt.replace("{fps}", (client.getCurrentFps() + ""));
-                    if(value.contains("{health}")) {
-                        value = value.replace("{health}", ("" + client.player.getHealth()));
+
+                        if (value.contains("{health}")) {
+                            value = value.replace("{health}", ("" + (int)client.player.getHealth()));
+                        }
+                    if (value.contains("{hp}")) {
+                        value = value.replace("{hp}", ("" + (int)client.player.getHealth()));
                     }
                     if(value.contains("{date}") || value.contains("{time}")) {
                         LocalDateTime t = LocalDateTime.now();
@@ -163,6 +165,20 @@ public class PumpkinClient implements ClientModInitializer {
                     if(value.contains("{username}")) {
                         value = value.replace("{username}", ("" + client.player.getName().getString()));
                     }
+                    if(value.contains("{player}")) {
+                        value = value.replace("{player}", ("" + client.player.getName().getString()));
+                    }
+
+                        if (value.contains("{x}")) {
+                            value = value.replace("{x}", ("" + (int) client.player.getX()));
+                        }
+                        if (value.contains("{y}")) {
+                            value = value.replace("{y}", ("" + (int) client.player.getY()));
+                        }
+                        if (value.contains("{z}")) {
+                            value = value.replace("{z}", ("" + (int) client.player.getZ()));
+                        }
+
 
                 }
             } catch(NullPointerException e){}
@@ -185,9 +201,9 @@ public class PumpkinClient implements ClientModInitializer {
 
     public void ColourMapInit(){
         PumpkinClient.colourMap.put("literal{white}", Color.WHITE);
-        PumpkinClient.colourMap.put("literal{blue}", Color.BLUE);
+        PumpkinClient.colourMap.put("literal{blue}", new Color(40, 47, 238));
         PumpkinClient.colourMap.put("literal{red}", Color.RED);
-        PumpkinClient.colourMap.put("literal{green}", Color.GREEN);
+        PumpkinClient.colourMap.put("literal{green}", new Color(40, 238, 81));
         PumpkinClient.colourMap.put("literal{yellow}", Color.YELLOW);
         PumpkinClient.colourMap.put("literal{orange}", new Color(249, 117, 38));
         PumpkinClient.colourMap.put("literal{pink}", new Color(240, 114, 208));
@@ -195,6 +211,7 @@ public class PumpkinClient implements ClientModInitializer {
         PumpkinClient.colourMap.put("literal{pastel red}", new Color(	249, 187, 187));
         PumpkinClient.colourMap.put("literal{pastel yellow}", new Color(240, 238, 174));
         PumpkinClient.colourMap.put("literal{pastel green}", new Color(187, 249, 198));
+        PumpkinClient.colourMap.put("literal{pastel pink}", new Color(255, 193, 248));
 
         colourMapIndex.put("literal{white}", 0);
         colourMapIndex.put("literal{blue}", 1);
@@ -207,6 +224,7 @@ public class PumpkinClient implements ClientModInitializer {
         colourMapIndex.put("literal{pastel red}", 8);
         colourMapIndex.put("literal{pastel yellow}", 9);
         colourMapIndex.put("literal{pastel green}", 10);
+        colourMapIndex.put("literal{pastel pink}", 11);
 
 
         //INVERSE REGISTER
@@ -221,6 +239,7 @@ public class PumpkinClient implements ClientModInitializer {
         invMapIndex.put(8, "literal{pastel red}");
         invMapIndex.put(9, "literal{pastel yellow}");
         invMapIndex.put(10, "literal{pastel green}");
+        invMapIndex.put(11, "literal{pastel pink}");
     }
 
    public static void LoadConfig(){

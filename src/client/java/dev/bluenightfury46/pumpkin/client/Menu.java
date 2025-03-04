@@ -55,6 +55,7 @@ public class Menu extends Screen {
         cycle_v.add(Text.of("pastel red"));
         cycle_v.add(Text.of("pastel green"));
         cycle_v.add(Text.of("pastel yellow"));
+        cycle_v.add(Text.of("pastel pink"));
 
         Function<Text, Text> func = val -> val;
 try {
