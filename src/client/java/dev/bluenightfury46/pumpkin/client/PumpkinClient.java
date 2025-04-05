@@ -9,7 +9,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ClientBossBar;
 import net.minecraft.client.gui.screen.Screen;
@@ -18,6 +20,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.datafixer.fix.OptionsKeyLwjgl3Fix;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 import org.lwjgl.glfw.GLFW;
@@ -62,6 +65,8 @@ public class PumpkinClient implements ClientModInitializer {
     final int index_max = 9;
 
     public static final String MOD_ID = "customwatermark";
+
+    public static final Identifier HUD_ID_WATERMARK = Identifier.of(MOD_ID, "customwatermark_watermark_hud");
 
 
     @Override
@@ -138,7 +143,8 @@ public class PumpkinClient implements ClientModInitializer {
 
 
 
-        HudRenderCallback.EVENT.register((drawContext, counter)->{
+        HudLayerRegistrationCallback.EVENT.register(layeredDrawerWrapper -> layeredDrawerWrapper.attachLayerAfter(IdentifiedLayer.SUBTITLES, HUD_ID_WATERMARK, (context, tickCounter) -> {
+
 
             String value = txt;
 
@@ -177,7 +183,53 @@ public class PumpkinClient implements ClientModInitializer {
                         }
                         if (value.contains("{z}")) {
                             value = value.replace("{z}", ("" + (int) client.player.getZ()));
+
+
                         }
+
+                    int MoonPhase = client.player.clientWorld.getMoonPhase()+1;
+                    if (value.contains("{moonphase}")) {
+
+
+                        System.out.println(MoonPhase);
+                       switch(MoonPhase){
+                           case 1:{
+                               value = value.replace("{moonphase}", ("" + "Full Moon"));
+                           }
+                           case 2:{
+                               value = value.replace("{moonphase}", ("" + "Waning Gibbous"));
+                           }
+                           case 3:{
+                               value = value.replace("{moonphase}", ("" + "Last Quarter"));
+                           }
+                           case 4:{
+                               value = value.replace("{moonphase}", ("" + "Waning Crescent"));
+                           }
+                           case 5:{
+                               value = value.replace("{moonphase}", ("" + "New Moon"));
+                           }
+                           case 6:{
+                               value = value.replace("{moonphase}", ("" + "Waxing Crescent"));
+                           }
+                           case 7:{
+                               value = value.replace("{moonphase}", ("" + "First Quarter"));
+                           }
+                           case 8:{
+                               value = value.replace("{moonphase}", ("" + "Waxing Gibbous"));
+                           }
+                       }
+
+
+                    }
+
+                    if (value.contains("{moon}")) {
+                        value = value.replace("{moon}", ("" + (MoonPhase)));
+                    }
+                    if (value.contains("{Moon}")) {
+                        value = value.replace("{moon}", ("" + (MoonPhase)));
+                    }
+
+
 
 
                 }
@@ -185,13 +237,13 @@ public class PumpkinClient implements ClientModInitializer {
 
 
             try {
-                drawContext.drawText(client.textRenderer, value, x, y, colour.getRGB(), false);
+                context.drawText(client.textRenderer, value, x, y, colour.getRGB(), false);
             } catch(NullPointerException e){
 
             }
 
 
-        });
+        }));
 
 
         LoadConfig();
