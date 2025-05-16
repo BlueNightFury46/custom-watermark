@@ -10,7 +10,7 @@ public class json implements JsonSerializer<config>, JsonDeserializer<config>{
 
 
         JsonObject obj = jsonElement.getAsJsonObject();
-        return new config(obj.get("x").getAsInt(), obj.get("y").getAsInt(), obj.get("txt").getAsString(), obj.get("colour").getAsString());
+        return new config(obj.get("x").getAsInt(), obj.get("y").getAsInt(), obj.get("scale").getAsFloat(), obj.get("txt").getAsString(), obj.get("colour").getAsString());
 
 
     }
@@ -23,6 +23,7 @@ public class json implements JsonSerializer<config>, JsonDeserializer<config>{
 
         object.addProperty("x", config.x);
         object.addProperty("y", config.y);
+        object.addProperty("scale", config.scale);
         object.addProperty("txt", config.txt);
         object.addProperty("colour", config.priorColour);
 
