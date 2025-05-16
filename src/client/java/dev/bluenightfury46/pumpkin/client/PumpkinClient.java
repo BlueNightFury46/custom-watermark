@@ -16,6 +16,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ClientBossBar;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.datafixer.fix.OptionsKeyLwjgl3Fix;
 import net.minecraft.entity.boss.BossBar;
@@ -40,6 +41,8 @@ public class PumpkinClient implements ClientModInitializer {
 
     public static int x = 20;
     public static int y = 20;
+
+    public static float scale = 1.0f;
   //  public static int width;
  //   public static int height;
     public static Color colour = Color.WHITE;
@@ -61,6 +64,8 @@ public class PumpkinClient implements ClientModInitializer {
     public static boolean running = true;
 
     public static boolean devmode = true;
+
+    private static final Identifier GRASS_BLOCK_TEXTURE_IDENTIFIER_CUSTOM_WATERMARK = Identifier.of("minecraft", "textures/block/grass_block.png");
 
     final int index_max = 9;
 
@@ -191,7 +196,7 @@ public class PumpkinClient implements ClientModInitializer {
                     if (value.contains("{moonphase}")) {
 
 
-                        System.out.println(MoonPhase);
+
                        switch(MoonPhase){
                            case 1:{
                                value = value.replace("{moonphase}", ("" + "Full Moon"));
@@ -237,7 +242,16 @@ public class PumpkinClient implements ClientModInitializer {
 
 
             try {
+                if(scale!=1.0f) {
+                    context.getMatrices().scale(scale, scale, scale);
+                }
                 context.drawText(client.textRenderer, value, x, y, colour.getRGB(), false);
+
+                if(txt.contains("{grass_block}")){
+
+                    context.drawTexture(RenderLayer::getGuiTextured, GRASS_BLOCK_TEXTURE_IDENTIFIER_CUSTOM_WATERMARK, x+value.length(), y, 0, 0, (16* ((int) scale)), (16* ((int) scale)), (16* ((int) scale)), (16* ((int) scale)));
+                }
+
             } catch(NullPointerException e){
 
             }
@@ -317,11 +331,16 @@ public class PumpkinClient implements ClientModInitializer {
 
                 config config_data = gson.fromJson(fileData, config.class);
 
-                x = config_data.x;
-                y = config_data.y;
-                colour = colourMap.get(config_data.priorColour);
-                priorColourString = config_data.priorColour;
-                txt = config_data.txt;
+                try {
+                    x = config_data.x;
+                    y = config_data.y;
+                    scale = config_data.scale;
+                    colour = colourMap.get(config_data.priorColour);
+                    priorColourString = config_data.priorColour;
+                    txt = config_data.txt;
+                }catch(NullPointerException e){
+
+                }
 
 
 
@@ -357,7 +376,7 @@ public class PumpkinClient implements ClientModInitializer {
 
        try{ x = Integer.parseInt(Menu.x_pos.getText()); }catch(NullPointerException e){x = 10;}catch(NumberFormatException e){x = 10;}
        try{ y = Integer.parseInt(Menu.y_pos.getText()); }catch(NullPointerException e){y = 10;}catch(NumberFormatException e){y = 10;}
-     //  try{ width = Integer.parseInt(Menu.width.getText()); }catch(NullPointerException e){width = 30;}catch(NumberFormatException e){width = 30;}
+       try{ scale = Float.parseFloat(Menu.scale.getText()); }catch(NullPointerException e){scale = 1.0f;}catch(NumberFormatException e){scale = 1.0f;}
      //  try{ height = Integer.parseInt(Menu.height.getText()); }catch(NullPointerException e){height = 10;}catch(NumberFormatException e){height = 10;}
 
        try{ txt = Menu.text.getText();}catch (NullPointerException e){txt = "FPS: {fps}";}
@@ -367,7 +386,7 @@ public class PumpkinClient implements ClientModInitializer {
 
        try {
 
-           config conf = new config(x, y, txt, priorColourString);
+           config conf = new config(x, y, scale, txt, priorColourString);
 
            Gson gson = new GsonBuilder().registerTypeAdapter(config.class, new json()).create();
 
@@ -413,7 +432,7 @@ public class PumpkinClient implements ClientModInitializer {
 
         try {
 
-            config conf = new config(x, y, txt, priorColourString);
+            config conf = new config(x, y, scale, txt, priorColourString);
 
             Gson gson = new GsonBuilder().registerTypeAdapter(config.class, new json()).create();
 

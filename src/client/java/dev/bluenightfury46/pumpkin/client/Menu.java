@@ -27,6 +27,7 @@ public class Menu extends Screen {
 
     public static TextFieldWidget x_pos;
     public static TextFieldWidget y_pos;
+    public static TextFieldWidget scale;
     public static TextFieldWidget width;
     public static TextFieldWidget height;
     public static TextFieldWidget text;
@@ -35,6 +36,7 @@ public class Menu extends Screen {
 
     public static TextWidget x_txt;
     public static TextWidget y_txt;
+    public static TextWidget scale_txt;
     public static TextWidget w_txt;
     public static TextWidget h_txt;
 
@@ -78,6 +80,12 @@ try {
         y_pos.setMaxLength(10);
         y_txt = new TextWidget(y_pos.getX(), y_pos.getY()-15, y_pos.getWidth(), y_pos.getHeight(), Text.of("y value"), textRenderer);
 
+        scale = new TextFieldWidget(textRenderer, 280, 140+10, 40, 20, Text.of(""));
+        scale.setText(String.valueOf(PumpkinClient.scale));
+        scale.setMaxLength(3);
+        scale_txt = new TextWidget(scale.getX(), scale.getY()-15, scale.getWidth(), scale.getHeight(), Text.of("scale"), textRenderer);
+
+
 
         width = new TextFieldWidget(textRenderer, 10, 100-10+20, 40, 20, Text.of(""));
         width.setText("0");
@@ -108,12 +116,14 @@ try {
 
         addDrawableChild(x_pos);
         addDrawableChild(y_pos);
+        addDrawableChild(scale);
      //   addDrawableChild(width);
      //   addDrawableChild(height);
 
 
         addDrawableChild(y_txt);
         addDrawableChild(x_txt);
+        addDrawableChild(scale_txt);
         addDrawableChild(txt_txt);
        // addDrawableChild(w_txt);
      //   addDrawableChild(h_txt);
