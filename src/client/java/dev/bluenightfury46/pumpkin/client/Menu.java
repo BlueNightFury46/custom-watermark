@@ -80,7 +80,7 @@ try {
         y_pos.setMaxLength(10);
         y_txt = new TextWidget(y_pos.getX(), y_pos.getY()-15, y_pos.getWidth(), y_pos.getHeight(), Text.of("y value"), textRenderer);
 
-        scale = new TextFieldWidget(textRenderer, 280, 140+10, 40, 20, Text.of(""));
+        scale = new TextFieldWidget(textRenderer, 280+10, 140+10, 40, 20, Text.of(""));
         scale.setText(String.valueOf(PumpkinClient.scale));
         scale.setMaxLength(3);
         scale_txt = new TextWidget(scale.getX(), scale.getY()-15, scale.getWidth(), scale.getHeight(), Text.of("scale"), textRenderer);

@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "dev.bluenightfury46.customwatermark.mixin",
+  "package": "dev.bluenightfury46.pumpkin.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
   ],

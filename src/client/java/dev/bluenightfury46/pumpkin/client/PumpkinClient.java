@@ -9,14 +9,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ClientBossBar;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.datafixer.fix.OptionsKeyLwjgl3Fix;
 import net.minecraft.entity.boss.BossBar;
@@ -24,6 +24,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.logging.log4j.core.tools.picocli.CommandLine;
+import org.joml.Matrix2fKt;
+import org.joml.Matrix3x2fStack;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.LoggerFactory;
 
@@ -65,14 +67,14 @@ public class PumpkinClient implements ClientModInitializer {
 
     public static boolean devmode = true;
 
-    private static final Identifier GRASS_BLOCK_TEXTURE_IDENTIFIER_CUSTOM_WATERMARK = Identifier.of("minecraft", "textures/block/grass_block.png");
+ //   private static final Identifier GRASS_BLOCK_TEXTURE_IDENTIFIER_CUSTOM_WATERMARK = Identifier.of("minecraft", "textures/block/grass_block_side.png");
 
     final int index_max = 9;
 
     public static final String MOD_ID = "customwatermark";
 
     public static final Identifier HUD_ID_WATERMARK = Identifier.of(MOD_ID, "customwatermark_watermark_hud");
-
+    public static final Identifier WATERMARK_RENDER = Identifier.of(MOD_ID, "watermark_overlay");
 
     @Override
     public void onInitializeClient() {
@@ -148,7 +150,10 @@ public class PumpkinClient implements ClientModInitializer {
 
 
 
-        HudLayerRegistrationCallback.EVENT.register(layeredDrawerWrapper -> layeredDrawerWrapper.attachLayerAfter(IdentifiedLayer.SUBTITLES, HUD_ID_WATERMARK, (context, tickCounter) -> {
+        HudElementRegistry.addLast(WATERMARK_RENDER, (context, tickCounter) -> {
+
+
+
 
 
             String value = txt;
@@ -192,7 +197,10 @@ public class PumpkinClient implements ClientModInitializer {
 
                         }
 
+
+
                     int MoonPhase = client.player.clientWorld.getMoonPhase()+1;
+
                     if (value.contains("{moonphase}")) {
 
 
@@ -242,22 +250,31 @@ public class PumpkinClient implements ClientModInitializer {
 
 
             try {
+
+
+
+
                 if(scale!=1.0f) {
-                    context.getMatrices().scale(scale, scale, scale);
+                   context.getMatrices().scale(scale);
                 }
                 context.drawText(client.textRenderer, value, x, y, colour.getRGB(), false);
 
-                if(txt.contains("{grass_block}")){
-
-                    context.drawTexture(RenderLayer::getGuiTextured, GRASS_BLOCK_TEXTURE_IDENTIFIER_CUSTOM_WATERMARK, x+value.length(), y, 0, 0, (16* ((int) scale)), (16* ((int) scale)), (16* ((int) scale)), (16* ((int) scale)));
+                if(scale!=1.0f) {
+                    context.getMatrices().scaling(1f);
                 }
+
+
+
+
+
+
 
             } catch(NullPointerException e){
 
             }
 
 
-        }));
+        });
 
 
         LoadConfig();
